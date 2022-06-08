@@ -4,7 +4,8 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Hello !Max</Text>
+      <Text>Camera</Text>
+      
       <StatusBar style="auto" />
     </View>
   );
