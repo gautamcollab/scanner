@@ -10,22 +10,17 @@ export default function App() {
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
   const [photo, setPhoto] = useState();
-  const [pickedImagePath, setPickedImagePath] = useState('');
 
-  const showImagePicker = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync(); 
-  
+  let openImagePicker = async() =>{
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
     if (permissionResult.granted === false) {
-      alert("App does not have permission to access Camera roll")
-      return;
-    }
+      alert("Permission to access camera roll is required!"); 
+      return; 
 
-    console.log(permissionResult); 
-
-    if (!permissionResult.cancelled){
-      setPickedImagePath(permissionResult.uri);
-      console.log(permissionResult.uri) 
     }
+    let pickerResult = await ImagePicker.launchImageLibraryAsync();
+    console.log(pickerResult) 
   }
 
   useEffect(() => {
@@ -56,6 +51,7 @@ export default function App() {
 
   if (photo) {
     let savePhoto = () => {
+      // this will need to send to ocr
       MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
         setPhoto(undefined);
       });
@@ -74,11 +70,11 @@ export default function App() {
       <View>
         <Pressable style={styles.cameraButton} onPress={takePic}>
         <Text style={styles.cameraButton}> TAKE PIC </Text>
-        <Button onPress={showImagePicker} title="Select an image"/> 
+        <Button onPress={openImagePicker} title="Select an image"/> 
 
         <View style={styles.imageContainer}>
           {
-            pickedImagePath !== '' && <Image source={{ uri: pickedImagePath }} style={styles.image}
+            openImagePicker !== '' && <Image source={{ uri: openImagePicker }} style={styles.image}
             />
            }
         </View>
