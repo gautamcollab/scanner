@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, Button, Pressable } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, Pressable, Image } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker'; 
 import * as MediaLibrary from 'expo-media-library';
 
 export default function App() {
@@ -9,6 +10,23 @@ export default function App() {
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
   const [photo, setPhoto] = useState();
+  const [pickedImagePath, setPickedImagePath] = useState('');
+
+  const showImagePicker = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync(); 
+  
+    if (permissionResult.granted === false) {
+      alert("App does not have permission to access Camera roll")
+      return;
+    }
+
+    console.log(permissionResult); 
+
+    if (!permissionResult.cancelled){
+      setPickedImagePath(permissionResult.uri);
+      console.log(permissionResult.uri) 
+    }
+  }
 
   useEffect(() => {
     (async () => {
@@ -56,6 +74,14 @@ export default function App() {
       <View>
         <Pressable style={styles.cameraButton} onPress={takePic}>
         <Text style={styles.cameraButton}> TAKE PIC </Text>
+        <Button onPress={showImagePicker} title="Select an image"/> 
+
+        <View style={styles.imageContainer}>
+          {
+            pickedImagePath !== '' && <Image source={{ uri: pickedImagePath }} style={styles.image}
+            />
+           }
+        </View>
         </Pressable> 
       </View>
       <StatusBar style="auto" />
@@ -77,5 +103,8 @@ const styles = StyleSheet.create({
   preview: {
     alignSelf: 'stretch',
     flex: 1
-  }
+  }, 
+  imageContainer: {
+    padding: 30
+  },
 });
